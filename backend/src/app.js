@@ -1,7 +1,14 @@
 require('dotenv').config();
 const dns = require('dns');
-// Paksa menggunakan DNS Google untuk mengatasi ECONNREFUSED pada record SRV
-dns.setServers(['8.8.8.8', '8.8.4.4']);
+
+// Hanya gunakan DNS Google di lingkungan lokal jika ada masalah
+if (process.env.NODE_ENV !== 'production') {
+  try {
+    dns.setServers(['8.8.8.8', '8.8.4.4']);
+  } catch (e) {
+    console.log('Gagal mengatur DNS server:', e.message);
+  }
+}
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -54,9 +61,13 @@ app.use((req, res) => {
   });
 });
 
-// Koneksi database untuk lingkungan Vercel (tanpa app.listen)
+// Koneksi database untuk lingkungan Vercel
+if (!process.env.MONGODB_URI) {
+  console.error('❌ MONGODB_URI tidak ditemukan di Environment Variables');
+}
+
 if (process.env.NODE_ENV !== 'production') {
-  mongoose.connect(process.env.MONGODB_URI, {
+  mongoose.connect(process.env.MONGODB_URI || '', {
     family: 4,
     connectTimeoutMS: 10000,
   })
@@ -68,9 +79,9 @@ if (process.env.NODE_ENV !== 'production') {
     });
 } else {
   // Di produksi (Vercel), kita konek tanpa menunggu listen
-  mongoose.connect(process.env.MONGODB_URI, {
+  mongoose.connect(process.env.MONGODB_URI || '', {
     connectTimeoutMS: 10000,
-  });
+  }).catch(err => console.error('MongoDB connection error:', err));
 }
 
 module.exports = app;
