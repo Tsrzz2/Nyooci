@@ -23,6 +23,11 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+// Health check untuk Vercel
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Backend is running' });
+});
+
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
