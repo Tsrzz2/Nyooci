@@ -14,100 +14,87 @@ export default function Home() {
   return (
     <div>
       <section style={{
-        background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
+        position: 'relative',
+        height: '100vh',
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         color: 'white',
-        padding: '5rem 2rem',
         textAlign: 'center',
-        borderRadius: '0 0 3rem 3rem'
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("https://images.unsplash.com/photo-1461896756985-237d6580bd0d?q=80&w=2070&auto=format&fit=crop")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        padding: '0 1rem'
       }}>
-        <img src="/logo.png" alt="Nyooci Logo" style={{ height: '180px', width: 'auto', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.2))' }} />
-        <h1 style={{ fontSize: '3rem', fontWeight: '700', marginBottom: '1rem' }}>
-          Shoe Care Service Premium
-        </h1>
-        <p style={{ fontSize: '1.25rem', marginBottom: '2rem', opacity: 0.9 }}>
-         rawat sepatu kesayanganmu dengan layanan terbaik
-        </p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-          <Link to="/services" className="btn" style={{ background: 'white', color: 'var(--primary)' }}>
-            Lihat Layanan
-          </Link>
-          <Link to="/register" className="btn btn-outline" style={{ borderColor: 'white', color: 'white' }}>
-            Daftar Sekarang
-          </Link>
+        <div className="container" style={{ maxWidth: '900px' }}>
+          <p style={{ color: 'var(--primary)', fontWeight: '700', letter-spacing: '2px', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
+            — PREMIUM SHOE CARE SINCE 2013
+          </p>
+          <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', fontWeight: '900', marginBottom: '1.5rem', lineHeight: '1.1', textTransform: 'uppercase' }}>
+            CUCI SEPATU PREMIUM BERGARANSI
+          </h1>
+          <p style={{ fontSize: '1.125rem', marginBottom: '2.5rem', maxWidth: '800px', marginInline: 'auto', opacity: 0.9 }}>
+            Lebih dari sekadar cuci sepatu — kami merawat, melindungi, dan mengembalikan tampilan sepatu kesayanganmu agar awet, bersih, dan nyaman dipakai.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/services" className="btn btn-primary" style={{ padding: '1rem 2rem' }}>
+              Gunakan Layanan Sekarang
+            </Link>
+            <Link to="/booking" className="btn btn-outline" style={{ padding: '1rem 2rem' }}>
+              Antar Jemput
+            </Link>
+          </div>
+        </div>
+        
+        {/* Floating Chat Icon Placeholder */}
+        <div style={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+          background: 'var(--secondary)',
+          color: 'white',
+          width: '60px',
+          height: '60px',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '1.5rem',
+          boxShadow: '0 10px 15px rgba(0,0,0,0.3)',
+          cursor: 'pointer',
+          zIndex: 1000,
+          border: '1px solid var(--border)'
+        }}>
+          💬
         </div>
       </section>
 
-      <section style={{ padding: '4rem 2rem' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: '700', textAlign: 'center', marginBottom: '3rem' }}>
-          Mengapa Nyooci?
-        </h2>
-        <div className="grid grid-3 container" style={{ margin: '0 auto' }}>
-          {[
-            { icon: '✨', title: 'Premium Quality', desc: 'Menggunakan bahan berkualitas tinggi untuk hasil terbaik' },
-            { icon: '🚚', title: 'Pickup & Delivery', desc: 'Layanan jemput dan antar sepatu ke lokasi kamu' },
-            { icon: '⏱️', title: 'Cepat & Tepat', desc: 'Proses cepat dengan hasil yang memuaskan' }
-          ].map((item, i) => (
-            <div key={i} className="card" style={{ padding: '2rem', textAlign: 'center' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{item.icon}</div>
-              <h3 style={{ marginBottom: '0.5rem' }}>{item.title}</h3>
-              <p style={{ color: 'var(--gray)' }}>{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section style={{ padding: '4rem 2rem', background: 'var(--light)' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: '700', textAlign: 'center', marginBottom: '3rem' }}>
-          Layanan Kami
-        </h2>
-        <div className="grid grid-3 container" style={{ margin: '0 auto' }}>
-          {services.map(service => (
-            <div key={service._id} className="card" style={{ overflow: 'hidden' }}>
-              {service.image && (
-                <img src={service.image} alt={service.name} style={{ width: '100%', height: '160px', objectFit: 'cover' }} />
-              )}
-              <div style={{ padding: '1.5rem' }}>
-                <span style={{
-                  display: 'inline-block',
-                  padding: '0.25rem 0.75rem',
-                  background: 'var(--primary)',
-                  color: 'white',
-                  borderRadius: '9999px',
-                  fontSize: '0.75rem',
-                  marginBottom: '0.5rem',
-                  textTransform: 'uppercase'
-                }}>
-                  {service.category}
-                </span>
-                <h3 style={{ marginBottom: '0.5rem' }}>{service.name}</h3>
-                <p style={{ color: 'var(--gray)', fontSize: '0.875rem', marginBottom: '1rem' }}>
-                  {service.description}
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: '700', color: 'var(--primary)' }}>
-                    Rp {service.price.toLocaleString('id-ID')}
-                  </span>
-                  <Link to={`/booking/${service._id}`} className="btn btn-primary btn-sm">
-                    Booking
+      <section style={{ padding: '6rem 2rem', background: '#fff' }}>
+        <div className="container">
+          <h2 style={{ fontSize: '2.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '4rem', textTransform: 'uppercase' }}>
+            Layanan Kami
+          </h2>
+          <div className="grid grid-3">
+            {services.map(service => (
+              <div key={service._id} className="card" style={{ border: 'none', boxShadow: 'none' }}>
+                {service.image && (
+                  <img src={service.image} alt={service.name} style={{ width: '100%', height: '250px', objectFit: 'cover' }} />
+                )}
+                <div style={{ padding: '1.5rem 0' }}>
+                  <div style={{ color: 'var(--primary)', fontWeight: '700', fontSize: '0.75rem', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
+                    {service.category}
+                  </div>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '0.75rem' }}>{service.name}</h3>
+                  <p style={{ color: 'var(--gray)', marginBottom: '1.5rem' }}>{service.description}</p>
+                  <Link to={`/booking/${service._id}`} style={{ fontWeight: '700', color: 'var(--dark)', borderBottom: '2px solid var(--primary)', paddingBottom: '2px' }}>
+                    LIHAT DETAIL
                   </Link>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-          <Link to="/services" className="btn btn-outline">Lihat Semua Layanan</Link>
-        </div>
-      </section>
-
-      <section style={{ padding: '4rem 2rem', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '1rem' }}>
-          Siap Merawat Sepatu Kamu?
-        </h2>
-        <p style={{ color: 'var(--gray)', marginBottom: '2rem' }}>
-          Daftar sekarang dan dapatkan berbagai promo menarik
-        </p>
-        <Link to="/register" className="btn btn-primary">Daftar Gratis</Link>
       </section>
     </div>
   )

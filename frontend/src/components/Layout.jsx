@@ -9,37 +9,48 @@ export default function Layout() {
 
   return (
     <div>
+      <div className="top-banner">
+        BERGABUNG DENGAN MEMBERSHIP NYOOCI. DAPATKAN 5000 POIN. — <span>BERGABUNG</span>
+      </div>
       <nav className="navbar">
         <div className="navbar-content">
-          <Link to="/" className="navbar-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <img src="/logo.png" alt="Nyooci Logo" style={{ height: '40px', width: 'auto' }} />
-            Nyooci
+          <Link to="/" className="navbar-logo">
+            <div className="navbar-logo-box">
+              SHOES<br />AND<br />CARE
+            </div>
           </Link>
           <div className="navbar-links">
             <Link to="/" className={isActive('/') ? 'active' : ''}>Beranda</Link>
-            <Link to="/services" className={isActive('/services') ? 'active' : ''}>Layanan</Link>
+            <Link to="/tentang">Tentang</Link>
+            <Link to="/services">Layanan</Link>
+            <Link to="/lokasi">Lokasi</Link>
+            <Link to="/promo">Promo</Link>
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             {user ? (
               <>
-                <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''}>Dashboard</Link>
-                {user.role === 'admin' && (
-                  <Link to="/admin" className={isActive('/admin') ? 'active' : ''}>Admin</Link>
-                )}
+                <Link to="/dashboard" className="btn btn-primary btn-sm">Dashboard</Link>
                 <button onClick={logout} className="btn btn-outline btn-sm">Logout</button>
               </>
             ) : (
               <>
-                <Link to="/login" className={isActive('/login') ? 'active' : ''}>Login</Link>
-                <Link to="/register" className="btn btn-primary btn-sm">Daftar</Link>
+                <Link to="/login" style={{ color: '#fff', fontWeight: '600' }}>Login</Link>
+                <Link to="/register" className="btn btn-primary btn-sm">Daftar Menu ▾</Link>
               </>
             )}
           </div>
         </div>
       </nav>
-      <main style={{ minHeight: 'calc(100vh - 80px)', padding: '2rem 0' }}>
+      <main style={{ minHeight: '100vh' }}>
         <Outlet />
       </main>
-      <footer style={{ background: 'var(--dark)', color: 'white', padding: '2rem', textAlign: 'center' }}>
-        <p>&copy; 2024 Nyooci - Shoe Care Service. All rights reserved.</p>
+      <footer style={{ background: 'var(--dark)', color: 'white', padding: '4rem 2rem', textAlign: 'center' }}>
+        <div className="container">
+          <div className="navbar-logo-box" style={{ margin: '0 auto 2rem', width: 'fit-content' }}>
+            SHOES<br />AND<br />CARE
+          </div>
+          <p style={{ color: 'var(--gray)', marginBottom: '1rem' }}>&copy; 2024 Nyooci - Shoe Care Service. All rights reserved.</p>
+        </div>
       </footer>
     </div>
   )
