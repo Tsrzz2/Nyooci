@@ -28,7 +28,22 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Backend is running' });
 });
 
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://res.cloudinary.com"],
+      connectSrc: ["'self'", "https://api.cloudinary.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  },
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));

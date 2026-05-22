@@ -28,7 +28,7 @@ export default function Home() {
         padding: '0 1rem'
       }}>
         <div className="container" style={{ maxWidth: '900px' }}>
-          <p style={{ color: 'var(--primary)', fontWeight: '700', letter-spacing: '2px', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
+          <p style={{ color: 'var(--primary)', fontWeight: '700', letterSpacing: '2px', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
             — PREMIUM SHOE CARE SINCE 2013
           </p>
           <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', fontWeight: '900', marginBottom: '1.5rem', lineHeight: '1.1', textTransform: 'uppercase' }}>

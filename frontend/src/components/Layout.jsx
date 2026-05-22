@@ -15,9 +15,7 @@ export default function Layout() {
       <nav className="navbar">
         <div className="navbar-content">
           <Link to="/" className="navbar-logo">
-            <div className="navbar-logo-box">
-              SHOES<br />AND<br />CARE
-            </div>
+            <img src="/logo.png" alt="Nyooci Logo" style={{ height: '60px', width: 'auto' }} />
           </Link>
           <div className="navbar-links">
             <Link to="/" className={isActive('/') ? 'active' : ''}>Beranda</Link>
@@ -46,9 +44,7 @@ export default function Layout() {
       </main>
       <footer style={{ background: 'var(--dark)', color: 'white', padding: '4rem 2rem', textAlign: 'center' }}>
         <div className="container">
-          <div className="navbar-logo-box" style={{ margin: '0 auto 2rem', width: 'fit-content' }}>
-            SHOES<br />AND<br />CARE
-          </div>
+          <img src="/logo.png" alt="Nyooci Logo" style={{ height: '80px', width: 'auto', marginBottom: '2rem' }} />
           <p style={{ color: 'var(--gray)', marginBottom: '1rem' }}>&copy; 2024 Nyooci - Shoe Care Service. All rights reserved.</p>
         </div>
       </footer>
