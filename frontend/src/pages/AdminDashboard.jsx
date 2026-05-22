@@ -152,7 +152,6 @@ export default function AdminDashboard() {
                     <th>Pickup</th>
                     <th>Status</th>
                     <th>Total</th>
-                    <th>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -178,9 +177,6 @@ export default function AdminDashboard() {
                         </select>
                       </td>
                       <td style={{ fontWeight: '600' }}>Rp {booking.totalPrice?.toLocaleString('id-ID')}</td>
-                      <td>
-                        <button onClick={() => handleDeleteBooking(booking._id)} className="btn btn-danger btn-sm">Hapus</button>
-                      </td>
                     </tr>
                   ))}
                 </tbody>

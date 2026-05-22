@@ -144,7 +144,6 @@ export default function UserDashboard() {
                     <th>Tanggal</th>
                     <th>Status</th>
                     <th>Total</th>
-                    <th>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -164,19 +163,6 @@ export default function UserDashboard() {
                       </td>
                       <td><span className={`badge ${statusBadge(booking.status)}`}>{booking.status}</span></td>
                       <td style={{ fontWeight: '600' }}>Rp {booking.totalPrice?.toLocaleString('id-ID')}</td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                          {booking.status === 'pending' && (
-                            <button onClick={() => handleCancelBooking(booking._id)} className="btn btn-danger btn-sm">Batal</button>
-                          )}
-                          {booking.status === 'completed' && !booking.rating && (
-                            <button onClick={() => handleReview(booking._id)} className="btn btn-secondary btn-sm">Review</button>
-                          )}
-                          {booking.rating && (
-                            <span style={{ color: 'var(--warning)' }}>⭐ {booking.rating}</span>
-                          )}
-                        </div>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
