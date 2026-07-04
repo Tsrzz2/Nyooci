@@ -1,14 +1,25 @@
 const Service = require('../models/Service');
+const cache = require('memory-cache');
 
 exports.getAllServices = async (req, res, next) => {
   try {
     const { category, active } = req.query;
+    const cacheKey = `services-${category || 'all'}-${active || 'all'}`;
+    let cachedServices = cache.get(cacheKey);
+    
+    if (cachedServices) {
+      return res.json({
+        success: true,
+        data: cachedServices
+      });
+    }
     
     const filter = {};
     if (category) filter.category = category;
     if (active !== undefined) filter.isActive = active === 'true';
 
     const services = await Service.find(filter).sort('order createdAt');
+    cache.put(cacheKey, services, 60000); // Cache for 60 seconds
 
     res.json({
       success: true,
@@ -21,6 +32,16 @@ exports.getAllServices = async (req, res, next) => {
 
 exports.getServiceById = async (req, res, next) => {
   try {
+    const cacheKey = `service-${req.params.id}`;
+    let cachedService = cache.get(cacheKey);
+    
+    if (cachedService) {
+      return res.json({
+        success: true,
+        data: cachedService
+      });
+    }
+    
     const service = await Service.findById(req.params.id);
 
     if (!service) {
@@ -29,6 +50,8 @@ exports.getServiceById = async (req, res, next) => {
         message: 'Layanan tidak ditemukan'
       });
     }
+    
+    cache.put(cacheKey, service, 60000);
 
     res.json({
       success: true,
@@ -42,6 +65,7 @@ exports.getServiceById = async (req, res, next) => {
 exports.createService = async (req, res, next) => {
   try {
     const service = await Service.create(req.body);
+    cache.clear(); // Clear all cache when a new service is created
 
     res.status(201).json({
       success: true,
@@ -67,6 +91,7 @@ exports.updateService = async (req, res, next) => {
         message: 'Layanan tidak ditemukan'
       });
     }
+    cache.clear(); // Clear all cache when a service is updated
 
     res.json({
       success: true,
@@ -88,33 +113,11 @@ exports.deleteService = async (req, res, next) => {
         message: 'Layanan tidak ditemukan'
       });
     }
+    cache.clear(); // Clear all cache when a service is deleted
 
     res.json({
       success: true,
       message: 'Layanan berhasil dihapus'
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.getServicesByCategory = async (req, res, next) => {
-  try {
-    const { category } = req.params;
-    const validCategories = ['cleaning', 'repair', 'repaint', 'polishing', 'hydration', 'other'];
-    
-    if (!validCategories.includes(category)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Kategori tidak valid'
-      });
-    }
-
-    const services = await Service.find({ category, isActive: true }).sort('order');
-
-    res.json({
-      success: true,
-      data: services
     });
   } catch (error) {
     next(error);

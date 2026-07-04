@@ -1,5 +1,6 @@
 const Booking = require('../models/Booking');
 const Service = require('../models/Service');
+const cache = require('memory-cache');
 
 exports.createBooking = async (req, res, next) => {
   try {
@@ -18,6 +19,7 @@ exports.createBooking = async (req, res, next) => {
     });
 
     await booking.populate('service');
+    cache.clear(); // Clear all cache when a new booking is created
 
     res.status(201).json({
       success: true,
@@ -32,6 +34,15 @@ exports.createBooking = async (req, res, next) => {
 exports.getMyBookings = async (req, res, next) => {
   try {
     const { status } = req.query;
+    const cacheKey = `my-bookings-${req.user._id}-${status || 'all'}`;
+    let cachedBookings = cache.get(cacheKey);
+    
+    if (cachedBookings) {
+      return res.json({
+        success: true,
+        data: cachedBookings
+      });
+    }
     
     const filter = { user: req.user._id };
     if (status) filter.status = status;
@@ -39,6 +50,7 @@ exports.getMyBookings = async (req, res, next) => {
     const bookings = await Booking.find(filter)
       .populate('service')
       .sort('-createdAt');
+    cache.put(cacheKey, bookings, 60000); // Cache for 60 seconds
 
     res.json({
       success: true,
@@ -51,6 +63,16 @@ exports.getMyBookings = async (req, res, next) => {
 
 exports.getBookingById = async (req, res, next) => {
   try {
+    const cacheKey = `booking-${req.params.id}`;
+    let cachedBooking = cache.get(cacheKey);
+    
+    if (cachedBooking) {
+      return res.json({
+        success: true,
+        data: cachedBooking
+      });
+    }
+    
     const booking = await Booking.findById(req.params.id)
       .populate('service')
       .populate('user', 'name email phone');
@@ -68,6 +90,7 @@ exports.getBookingById = async (req, res, next) => {
         message: 'Akses ditolak'
       });
     }
+    cache.put(cacheKey, booking, 60000); // Cache for 60 seconds
 
     res.json({
       success: true,
@@ -106,6 +129,7 @@ exports.cancelBooking = async (req, res, next) => {
     booking.status = 'cancelled';
     booking.notes = req.body.notes || 'Dibatalkan oleh user';
     await booking.save();
+    cache.clear(); // Clear all cache
 
     res.json({
       success: true,
@@ -147,6 +171,7 @@ exports.reviewBooking = async (req, res, next) => {
     booking.rating = rating;
     booking.review = review || '';
     await booking.save();
+    cache.clear(); // Clear all cache
 
     res.json({
       success: true,
@@ -161,6 +186,15 @@ exports.reviewBooking = async (req, res, next) => {
 exports.getAllBookings = async (req, res, next) => {
   try {
     const { status, userId, startDate, endDate } = req.query;
+    const cacheKey = `all-bookings-${status || 'all'}-${userId || 'all'}-${startDate || 'all'}-${endDate || 'all'}`;
+    let cachedBookings = cache.get(cacheKey);
+    
+    if (cachedBookings) {
+      return res.json({
+        success: true,
+        data: cachedBookings
+      });
+    }
     
     const filter = {};
     if (status) filter.status = status;
@@ -175,6 +209,7 @@ exports.getAllBookings = async (req, res, next) => {
       .populate('service')
       .populate('user', 'name email phone')
       .sort('-createdAt');
+    cache.put(cacheKey, bookings, 60000); // Cache for 60 seconds
 
     res.json({
       success: true,
@@ -206,6 +241,7 @@ exports.updateBookingStatus = async (req, res, next) => {
     await booking.save();
     await booking.populate('service');
     await booking.populate('user', 'name email phone');
+    cache.clear(); // Clear all cache
 
     res.json({
       success: true,
@@ -227,6 +263,7 @@ exports.deleteBooking = async (req, res, next) => {
         message: 'Booking tidak ditemukan'
       });
     }
+    cache.clear(); // Clear all cache
 
     res.json({
       success: true,
@@ -239,6 +276,16 @@ exports.deleteBooking = async (req, res, next) => {
 
 exports.getBookingStats = async (req, res, next) => {
   try {
+    const cacheKey = 'booking-stats';
+    let cachedStats = cache.get(cacheKey);
+    
+    if (cachedStats) {
+      return res.json({
+        success: true,
+        data: cachedStats
+      });
+    }
+    
     const stats = await Booking.aggregate([
       {
         $group: {
@@ -251,14 +298,17 @@ exports.getBookingStats = async (req, res, next) => {
 
     const totalBookings = stats.reduce((acc, curr) => acc + curr.count, 0);
     const totalRevenue = stats.reduce((acc, curr) => acc + curr.totalRevenue, 0);
+    
+    const statsData = {
+      stats,
+      totalBookings,
+      totalRevenue
+    };
+    cache.put(cacheKey, statsData, 60000); // Cache for 60 seconds
 
     res.json({
       success: true,
-      data: {
-        stats,
-        totalBookings,
-        totalRevenue
-      }
+      data: statsData
     });
   } catch (error) {
     next(error);
