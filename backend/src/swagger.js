@@ -1,4 +1,5 @@
 const swaggerJsdoc = require('swagger-jsdoc');
+const path = require('path');
 
 const options = {
   definition: {
@@ -12,6 +13,10 @@ const options = {
       }
     },
     servers: [
+      {
+        url: 'https://nyooci-app.vercel.app',
+        description: 'Production server (Vercel)'
+      },
       {
         url: 'http://localhost:5000',
         description: 'Development server'
@@ -329,7 +334,7 @@ const options = {
       }
     }
   },
-  apis: ['./src/routes/*.js'], // Path to the API routes
+  apis: [path.join(__dirname, 'routes', '*.js')], // Path to the API routes
 };
 
 const swaggerSpec = swaggerJsdoc(options);
