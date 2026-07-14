@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { bookingAPI, authAPI } from '../utils/api'
 
+const WHATSAPP_NUMBER = '62882007476292' // Ganti dengan nomor WhatsApp Anda
+
 export default function UserDashboard() {
   const { user } = useAuth()
   const { showToast } = useToast()
@@ -99,7 +101,7 @@ export default function UserDashboard() {
 
   return (
     <div className="container">
-      <h1 className="page-title">Dashboard</h1>
+      <h1 className="page-title">User Dashboard</h1>
 
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
         <button onClick={() => setActiveTab('bookings')} className={`btn ${activeTab === 'bookings' ? 'btn-primary' : 'btn-outline'}`}>
@@ -144,6 +146,7 @@ export default function UserDashboard() {
                     <th>Tanggal</th>
                     <th>Status</th>
                     <th>Total</th>
+                    <th>Hubungi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -163,6 +166,23 @@ export default function UserDashboard() {
                       </td>
                       <td><span className={`badge ${statusBadge(booking.status)}`}>{booking.status}</span></td>
                       <td style={{ fontWeight: '600' }}>Rp {booking.totalPrice?.toLocaleString('id-ID')}</td>
+                      <td>
+                        <a
+                          href={`https://wa.me/${WHATSAPP_NUMBER}?text=Halo%20Nyooci!%20Saya%20ingin%20bertanya%20tentang%20booking%20layanan%20${encodeURIComponent(booking.service?.name)}%20dengan%20ID%20${booking._id}.`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            background: '#25D366',
+                            color: 'white',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '0.5rem',
+                            textDecoration: 'none',
+                            fontSize: '0.875rem'
+                          }}
+                        >
+                          Chat WA
+                        </a>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

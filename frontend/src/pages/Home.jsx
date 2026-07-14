@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import { serviceAPI } from '../utils/api'
 import { useEffect, useState } from 'react'
 
+const WHATSAPP_NUMBER = '62882007476292' // Ganti dengan nomor WhatsApp Anda
+
 export default function Home() {
   const [services, setServices] = useState([])
 
@@ -29,7 +31,7 @@ export default function Home() {
       }}>
         <div className="container" style={{ maxWidth: '900px' }}>
           <p style={{ color: 'var(--primary)', fontWeight: '700', letterSpacing: '2px', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
-            — PREMIUM SHOE CARE SINCE 2013
+            — PREMIUM SHOE CARE SINCE 2026
           </p>
           <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', fontWeight: '900', marginBottom: '1.5rem', lineHeight: '1.1', textTransform: 'uppercase' }}>
             CUCI SEPATU PREMIUM BERGARANSI
@@ -41,32 +43,16 @@ export default function Home() {
             <Link to="/services" className="btn btn-primary" style={{ padding: '1rem 2rem' }}>
               Gunakan Layanan Sekarang
             </Link>
-            <Link to="/booking" className="btn btn-outline" style={{ padding: '1rem 2rem' }}>
-              Antar Jemput
-            </Link>
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER}?text=Halo%20Nyooci!%20Saya%20ingin%20bertanya%20tentang%20layanan%20cuci%20sepatu.`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn"
+              style={{ padding: '1rem 2rem', background: '#25D366', color: 'white' }}
+            >
+              Hubungi via WhatsApp
+            </a>
           </div>
-        </div>
-        
-        {/* Floating Chat Icon Placeholder */}
-        <div style={{
-          position: 'fixed',
-          bottom: '2rem',
-          right: '2rem',
-          background: 'var(--secondary)',
-          color: 'white',
-          width: '60px',
-          height: '60px',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '1.5rem',
-          boxShadow: '0 10px 15px rgba(0,0,0,0.3)',
-          cursor: 'pointer',
-          zIndex: 1000,
-          border: '1px solid var(--border)'
-        }}>
-          💬
         </div>
       </section>
 

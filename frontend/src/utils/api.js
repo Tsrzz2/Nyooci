@@ -73,4 +73,8 @@ export const bookingAPI = {
   getStats: () => api.get('/bookings/stats')
 }
 
+export const financialAPI = {
+  getFinancialData: () => api.get('/financial')
+}
+
 export default api

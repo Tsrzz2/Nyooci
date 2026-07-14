@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const { MongoMemoryServer } = require('mongodb-memory-server');
 const Service = require('./models/Service');
 const User = require('./models/User');
 require('dotenv').config();
@@ -107,36 +107,42 @@ const seedAdmin = {
 };
 
 async function seed() {
+  let mongoServer;
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      family: 4
-    });
+    // Start in-memory MongoDB server
+    mongoServer = await MongoMemoryServer.create();
+    const mongoUri = mongoServer.getUri();
+    
+    console.log(`Using in-memory MongoDB: ${mongoUri}`);
+    
+    await mongoose.connect(mongoUri);
     console.log('Connected to MongoDB');
 
     await Service.deleteMany({});
     console.log('Services cleared');
 
     await Service.insertMany(seedServices);
-    console.log('Services seeded successfully');
+    console.log('✅ Services seeded successfully');
 
     const existingAdmin = await User.findOne({ email: seedAdmin.email });
     if (!existingAdmin) {
       await User.create(seedAdmin);
-      console.log('Admin user created: admin@nyooci.com / admin123');
+      console.log('✅ Admin user created: admin@nyooci.com / admin123');
     } else {
       console.log('Admin user already exists');
     }
 
-    console.log('Seeding completed!');
+    console.log('\n🎉 Seeding completed!');
+    console.log('⚠️  Note: This is using an in-memory database. Data will be lost when the process exits.');
+    console.log('💡 For permanent storage, please install MongoDB locally or use MongoDB Atlas.');
+    
+    await mongoose.disconnect();
+    await mongoServer.stop();
     process.exit(0);
   } catch (error) {
     console.error('❌ Seeding error:', error.message);
-    if (error.message.includes('ECONNREFUSED')) {
-      console.log('\n💡 TIPS:');
-      console.log('1. Pastikan koneksi internet Anda stabil.');
-      console.log('2. Pastikan IP Address Anda sudah di-whitelist di MongoDB Atlas (Network Access).');
-      console.log('3. Periksa apakah MONGODB_URI di file .env sudah benar.');
-      console.log('4. Jika ingin menggunakan database lokal, ganti MONGODB_URI di .env menjadi: mongodb://127.0.0.1:27017/nyooci');
+    if (mongoServer) {
+      await mongoServer.stop();
     }
     process.exit(1);
   }

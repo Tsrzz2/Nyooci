@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { serviceAPI } from '../utils/api'
 
+const WHATSAPP_NUMBER = '62882007476292' // Ganti dengan nomor WhatsApp Anda
+
 export default function Services() {
   const [services, setServices] = useState([])
   const [loading, setLoading] = useState(true)
@@ -81,9 +83,20 @@ export default function Services() {
                     ⏱️ ~{service.duration} jam
                   </div>
                 </div>
-                <Link to={`/booking/${service._id}`} className="btn btn-primary" style={{ width: '100%' }}>
-                  Booking Sekarang
-                </Link>
+                <div style={{ display: 'flex', gap: '0.75rem', width: '100%' }}>
+                  <Link to={`/booking/${service._id}`} className="btn btn-primary" style={{ flex: 1 }}>
+                    Booking Sekarang
+                  </Link>
+                  <a
+                    href={`https://wa.me/${WHATSAPP_NUMBER}?text=Halo%20Nyooci!%20Saya%20ingin%20memesan%20layanan%20${encodeURIComponent(service.name)}%20dengan%20harga%20Rp%20${service.price.toLocaleString('id-ID')}.`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn"
+                    style={{ flex: 1, background: '#25D366', color: 'white' }}
+                  >
+                    Pesan via WhatsApp
+                  </a>
+                </div>
               </div>
             </div>
           ))}

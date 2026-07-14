@@ -32,9 +32,13 @@ export default function Login() {
     }
     setLoading(true)
     try {
-      await login(form.email, form.password)
+      const res = await login(form.email, form.password)
       showToast('Login berhasil!', 'success')
-      navigate('/dashboard')
+      if (res.user?.role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (err) {
       showToast(err.response?.data?.message || 'Login gagal', 'error')
     } finally {

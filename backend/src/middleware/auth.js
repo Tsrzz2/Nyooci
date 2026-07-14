@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { getMockUserById } = require('../utils/mockUsers');
 
 const protect = async (req, res, next) => {
   try {
@@ -16,8 +17,15 @@ const protect = async (req, res, next) => {
       });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-key-nyooci-2026');
+    
+    // Get user from DB or mock
+    let user;
+    try {
+      user = await User.findById(decoded.id);
+    } catch (err) {
+      user = getMockUserById(decoded.id);
+    }
 
     if (!user) {
       return res.status(401).json({
@@ -36,6 +44,7 @@ const protect = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    console.error('Auth error:', error);
     return res.status(401).json({
       success: false,
       message: 'Token tidak valid.'

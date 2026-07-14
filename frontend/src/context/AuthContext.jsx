@@ -27,7 +27,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem('token', res.data.data.accessToken)
     localStorage.setItem('refreshToken', res.data.data.refreshToken)
     setUser(res.data.data.user)
-    return res.data
+    return { ...res.data.data }
   }
 
   const register = async (data) => {
