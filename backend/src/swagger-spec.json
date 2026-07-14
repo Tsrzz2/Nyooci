@@ -1,0 +1,2358 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Nyooci API Documentation",
+    "version": "1.0.0",
+    "description": "API untuk layanan perawatan sepatu Nyooci. Dokumentasi lengkap seluruh endpoint termasuk autentikasi, manajemen layanan, booking, dan laporan keuangan.",
+    "contact": {
+      "name": "Nyooci Dev Team"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://nyooci-app.vercel.app",
+      "description": "Production server (Vercel)"
+    },
+    {
+      "url": "http://localhost:5000",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Endpoint autentikasi — register, login, logout, refresh token"
+    },
+    {
+      "name": "Users",
+      "description": "Endpoint manajemen user — profil, password, dan admin CRUD"
+    },
+    {
+      "name": "Services",
+      "description": "Endpoint manajemen layanan perawatan sepatu"
+    },
+    {
+      "name": "Bookings",
+      "description": "Endpoint pemesanan layanan — booking, cancel, review"
+    },
+    {
+      "name": "Financial",
+      "description": "Endpoint laporan keuangan (Admin only)"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Masukkan JWT access token. Contoh: \"eyJhbGciOiJIUzI1NiIs...\""
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "667a1b2c3d4e5f6a7b8c9d0e"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "081234567890"
+          },
+          "address": {
+            "type": "string",
+            "example": "Jl. Sudirman No. 123, Jakarta"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ],
+            "example": "user"
+          },
+          "avatar": {
+            "type": "string",
+            "example": ""
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Service": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "667a1b2c3d4e5f6a7b8c9d0e"
+          },
+          "name": {
+            "type": "string",
+            "example": "Deep Cleaning"
+          },
+          "description": {
+            "type": "string",
+            "example": "Pembersihan menyeluruh untuk menghilangkan noda, debu, dan bakteri pada sepatu."
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "cleaning",
+              "repair",
+              "repaint",
+              "polishing",
+              "hydration",
+              "other"
+            ],
+            "example": "cleaning"
+          },
+          "price": {
+            "type": "number",
+            "example": 35000
+          },
+          "duration": {
+            "type": "number",
+            "description": "Durasi dalam jam",
+            "example": 24
+          },
+          "image": {
+            "type": "string",
+            "example": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          },
+          "order": {
+            "type": "number",
+            "example": 1
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Booking": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "667a1b2c3d4e5f6a7b8c9d0e"
+          },
+          "user": {
+            "type": "string",
+            "description": "User ID atau objek User (populated)"
+          },
+          "service": {
+            "type": "string",
+            "description": "Service ID atau objek Service (populated)"
+          },
+          "shoeType": {
+            "type": "string",
+            "example": "Sneakers"
+          },
+          "shoeColor": {
+            "type": "string",
+            "example": "Putih"
+          },
+          "description": {
+            "type": "string",
+            "example": "Ada noda di bagian depan"
+          },
+          "pickupAddress": {
+            "type": "string",
+            "example": "Jl. Merdeka No. 45, Jakarta"
+          },
+          "pickupDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-08-01"
+          },
+          "pickupTime": {
+            "type": "string",
+            "example": "10:00"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "processing",
+              "completed",
+              "cancelled"
+            ],
+            "example": "pending"
+          },
+          "totalPrice": {
+            "type": "number",
+            "example": 35000
+          },
+          "notes": {
+            "type": "string",
+            "example": ""
+          },
+          "beforeImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "afterImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "nullable": true,
+            "example": null
+          },
+          "review": {
+            "type": "string",
+            "example": ""
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "example": "password123"
+          },
+          "phone": {
+            "type": "string",
+            "example": "081234567890"
+          },
+          "address": {
+            "type": "string",
+            "example": "Jl. Sudirman No. 123"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "admin@nyooci.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "admin123"
+          }
+        }
+      },
+      "RefreshTokenRequest": {
+        "type": "object",
+        "required": [
+          "refreshToken"
+        ],
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIs..."
+          }
+        }
+      },
+      "UpdateProfileRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "example": "John Updated"
+          },
+          "phone": {
+            "type": "string",
+            "example": "089876543210"
+          },
+          "address": {
+            "type": "string",
+            "example": "Jl. Baru No. 99"
+          }
+        }
+      },
+      "ChangePasswordRequest": {
+        "type": "object",
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ],
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "example": "oldpassword123"
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 6,
+            "example": "newpassword456"
+          }
+        }
+      },
+      "CreateServiceRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "category",
+          "price",
+          "duration"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Premium Cleaning"
+          },
+          "description": {
+            "type": "string",
+            "example": "Pembersihan premium dengan treatment khusus."
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "cleaning",
+              "repair",
+              "repaint",
+              "polishing",
+              "hydration",
+              "other"
+            ],
+            "example": "cleaning"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0,
+            "example": 55000
+          },
+          "duration": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Durasi dalam jam",
+            "example": 24
+          },
+          "image": {
+            "type": "string",
+            "example": "https://images.unsplash.com/photo-example"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          },
+          "order": {
+            "type": "number",
+            "example": 2
+          }
+        }
+      },
+      "CreateBookingRequest": {
+        "type": "object",
+        "required": [
+          "service",
+          "shoeType",
+          "pickupAddress",
+          "pickupDate",
+          "pickupTime"
+        ],
+        "properties": {
+          "service": {
+            "type": "string",
+            "description": "ID layanan",
+            "example": "667a1b2c3d4e5f6a7b8c9d0e"
+          },
+          "shoeType": {
+            "type": "string",
+            "example": "Sneakers"
+          },
+          "shoeColor": {
+            "type": "string",
+            "example": "Putih"
+          },
+          "description": {
+            "type": "string",
+            "example": "Ada noda di bagian depan"
+          },
+          "pickupAddress": {
+            "type": "string",
+            "example": "Jl. Merdeka No. 45, Jakarta"
+          },
+          "pickupDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-08-01"
+          },
+          "pickupTime": {
+            "type": "string",
+            "example": "10:00"
+          }
+        }
+      },
+      "ReviewRequest": {
+        "type": "object",
+        "required": [
+          "rating"
+        ],
+        "properties": {
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "example": 5
+          },
+          "review": {
+            "type": "string",
+            "example": "Hasil sangat bersih, recommended!"
+          }
+        }
+      },
+      "UpdateBookingStatusRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "processing",
+              "completed",
+              "cancelled"
+            ],
+            "example": "processing"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Sedang dikerjakan"
+          },
+          "beforeImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "afterImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Admin Updated"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "admin@nyooci.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "081234567890"
+          },
+          "address": {
+            "type": "string",
+            "example": "Jl. Admin No. 1"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ],
+            "example": "admin"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Validasi gagal"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "$ref": "#/components/schemas/User"
+              },
+              "accessToken": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIs..."
+              },
+              "refreshToken": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIs..."
+              }
+            }
+          }
+        }
+      },
+      "BookingStatsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "stats": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "pending"
+                    },
+                    "count": {
+                      "type": "number",
+                      "example": 5
+                    },
+                    "totalRevenue": {
+                      "type": "number",
+                      "example": 250000
+                    }
+                  }
+                }
+              },
+              "totalBookings": {
+                "type": "number",
+                "example": 15
+              },
+              "totalRevenue": {
+                "type": "number",
+                "example": 750000
+              }
+            }
+          }
+        }
+      },
+      "FinancialResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "totalRevenue": {
+                "type": "number",
+                "example": 500000
+              },
+              "completedRevenue": {
+                "type": "number",
+                "example": 350000
+              },
+              "totalBookings": {
+                "type": "number",
+                "example": 10
+              },
+              "activeBookings": {
+                "type": "number",
+                "example": 8
+              },
+              "revenueByService": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "example": "Deep Cleaning"
+                    },
+                    "revenue": {
+                      "type": "number",
+                      "example": 105000
+                    }
+                  }
+                }
+              },
+              "revenueByMonth": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "month": {
+                      "type": "string",
+                      "example": "2026-07"
+                    },
+                    "revenue": {
+                      "type": "number",
+                      "example": 250000
+                    }
+                  }
+                }
+              },
+              "revenueByStatus": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "completed"
+                    },
+                    "revenue": {
+                      "type": "number",
+                      "example": 350000
+                    }
+                  }
+                }
+              },
+              "transactions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "customer": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "service": {
+                      "type": "string",
+                      "example": "Deep Cleaning"
+                    },
+                    "price": {
+                      "type": "number",
+                      "example": 35000
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "completed"
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "summary": "Registrasi user baru",
+        "description": "Mendaftarkan user baru dengan data nama, email, password, nomor telepon, dan alamat. Mengembalikan access token dan refresh token.",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registrasi berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email sudah terdaftar atau validasi gagal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Login user",
+        "description": "Login dengan email dan password. Mengembalikan access token (berlaku 1 hari) dan refresh token (berlaku 7 hari).",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Email atau password salah / Akun tidak aktif",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "summary": "Logout user",
+        "description": "Menghapus refresh token user yang sedang login.",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Logout berhasil"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/refresh-token": {
+      "post": {
+        "summary": "Refresh access token",
+        "description": "Mendapatkan access token dan refresh token baru menggunakan refresh token yang masih valid.",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token berhasil di-refresh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "accessToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIs..."
+                        },
+                        "refreshToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIs..."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Refresh token tidak valid atau tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "summary": "Mendapatkan data user yang sedang login",
+        "description": "Mengembalikan data profil user berdasarkan JWT token yang dikirim.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data user berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/profile": {
+      "put": {
+        "summary": "Update profil user",
+        "description": "Memperbarui data profil (nama, nomor telepon, alamat) user yang sedang login.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profil berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Profil berhasil diperbarui"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/change-password": {
+      "put": {
+        "summary": "Ganti password",
+        "description": "Mengganti password user yang sedang login. Memerlukan password saat ini untuk verifikasi.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password berhasil diubah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password berhasil diubah"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Password saat ini salah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth": {
+      "get": {
+        "summary": "Mendapatkan semua user (Admin Only)",
+        "description": "Mengembalikan daftar seluruh user yang terdaftar, diurutkan berdasarkan tanggal terbaru.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar user berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Akses ditolak — hanya admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/{id}": {
+      "get": {
+        "summary": "Mendapatkan user berdasarkan ID (Admin Only)",
+        "description": "Mengembalikan data user berdasarkan ID yang diberikan.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID user (MongoDB ObjectId)",
+            "example": "667a1b2c3d4e5f6a7b8c9d0e"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data user berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses"
+          },
+          "403": {
+            "description": "Akses ditolak — hanya admin"
+          },
+          "404": {
+            "description": "User tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update data user (Admin Only)",
+        "description": "Memperbarui data user termasuk role dan status aktif. Admin dapat mengubah role user menjadi admin atau sebaliknya.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID user (MongoDB ObjectId)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User berhasil diperbarui"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses"
+          },
+          "403": {
+            "description": "Akses ditolak — hanya admin"
+          },
+          "404": {
+            "description": "User tidak ditemukan"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Hapus user (Admin Only)",
+        "description": "Menghapus user berdasarkan ID secara permanen.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID user (MongoDB ObjectId)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User berhasil dihapus"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses"
+          },
+          "403": {
+            "description": "Akses ditolak — hanya admin"
+          },
+          "404": {
+            "description": "User tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/services": {
+      "get": {
+        "summary": "Mendapatkan semua layanan",
+        "description": "Mengembalikan daftar seluruh layanan perawatan sepatu yang tersedia. Bisa difilter berdasarkan kategori dan status aktif. Tidak memerlukan autentikasi.",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "cleaning",
+                "repair",
+                "repaint",
+                "polishing",
+                "hydration",
+                "other"
+              ]
+            },
+            "description": "Filter berdasarkan kategori layanan"
+          },
+          {
+            "in": "query",
+            "name": "active",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "description": "Filter berdasarkan status aktif"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar layanan berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Service"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Membuat layanan baru (Admin Only)",
+        "description": "Menambahkan layanan perawatan sepatu baru. Hanya dapat dilakukan oleh admin.",
+        "tags": [
+          "Services"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateServiceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Layanan berhasil dibuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Layanan berhasil dibuat"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Service"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validasi gagal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses"
+          },
+          "403": {
+            "description": "Akses ditolak — hanya admin"
+          }
+        }
+      }
+    },
+    "/api/services/{id}": {
+      "get": {
+        "summary": "Mendapatkan layanan berdasarkan ID",
+        "description": "Mengembalikan detail satu layanan berdasarkan ID. Tidak memerlukan autentikasi.",
+        "tags": [
+          "Services"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID layanan (MongoDB ObjectId)",
+            "example": "667a1b2c3d4e5f6a7b8c9d0e"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail layanan berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Service"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Layanan tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update layanan (Admin Only)",
+        "description": "Memperbarui data layanan perawatan sepatu berdasarkan ID. Hanya dapat dilakukan oleh admin.",
+        "tags": [
+          "Services"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID layanan (MongoDB ObjectId)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateServiceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Layanan berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Layanan berhasil diperbarui"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Service"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses"
+          },
+          "403": {
+            "description": "Akses ditolak — hanya admin"
+          },
+          "404": {
+            "description": "Layanan tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Hapus layanan (Admin Only)",
+        "description": "Menghapus layanan perawatan sepatu berdasarkan ID secara permanen. Hanya dapat dilakukan oleh admin.",
+        "tags": [
+          "Services"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID layanan (MongoDB ObjectId)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Layanan berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Layanan berhasil dihapus"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses"
+          },
+          "403": {
+            "description": "Akses ditolak — hanya admin"
+          },
+          "404": {
+            "description": "Layanan tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bookings": {
+      "post": {
+        "summary": "Membuat booking baru",
+        "description": "Membuat pesanan layanan perawatan sepatu baru. Total harga otomatis diambil dari harga layanan yang dipilih. Booking juga otomatis ditulis ke Google Sheet jika SHEETDB_URL terkonfigurasi.",
+        "tags": [
+          "Bookings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Booking berhasil dibuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Booking berhasil dibuat"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Booking"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Layanan tidak valid atau validasi gagal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Mendapatkan semua booking (Admin Only)",
+        "description": "Mengembalikan daftar seluruh booking dari semua user. Bisa difilter berdasarkan status, userId, dan rentang tanggal.",
+        "tags": [
+          "Bookings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "confirmed",
+                "processing",
+                "completed",
+                "cancelled"
+              ]
+            },
+            "description": "Filter berdasarkan status booking"
+          },
+          {
+            "in": "query",
+            "name": "userId",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter berdasarkan user ID"
+          },
+          {
+            "in": "query",
+            "name": "startDate",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter tanggal mulai (YYYY-MM-DD)",
+            "example": "2026-01-01"
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter tanggal akhir (YYYY-MM-DD)",
+            "example": "2026-12-31"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar booking berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Booking"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses"
+          },
+          "403": {
+            "description": "Akses ditolak — hanya admin"
+          }
+        }
+      }
+    },
+    "/api/bookings/my-bookings": {
+      "get": {
+        "summary": "Mendapatkan booking user yang sedang login",
+        "description": "Mengembalikan daftar seluruh booking milik user yang sedang login, diurutkan dari terbaru. Bisa difilter berdasarkan status.",
+        "tags": [
+          "Bookings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "confirmed",
+                "processing",
+                "completed",
+                "cancelled"
+              ]
+            },
+            "description": "Filter berdasarkan status booking"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar booking berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Booking"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bookings/stats": {
+      "get": {
+        "summary": "Mendapatkan statistik booking (Admin Only)",
+        "description": "Mengembalikan statistik booking yang dikelompokkan berdasarkan status, termasuk total booking dan total pendapatan.",
+        "tags": [
+          "Bookings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Statistik booking berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingStatsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Akses ditolak — hanya admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bookings/{id}": {
+      "get": {
+        "summary": "Mendapatkan booking berdasarkan ID",
+        "description": "Mengembalikan detail booking berdasarkan ID. User hanya bisa melihat booking milik sendiri, admin bisa melihat semua.",
+        "tags": [
+          "Bookings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID booking (MongoDB ObjectId)",
+            "example": "667a1b2c3d4e5f6a7b8c9d0e"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail booking berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Booking"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses"
+          },
+          "403": {
+            "description": "Akses ditolak — bukan pemilik booking",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Booking tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update status booking (Admin Only)",
+        "description": "Memperbarui status, catatan, dan gambar before/after pada booking. Digunakan admin untuk memproses pesanan.",
+        "tags": [
+          "Bookings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID booking (MongoDB ObjectId)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookingStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status booking berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Status booking berhasil diperbarui"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Booking"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses"
+          },
+          "403": {
+            "description": "Akses ditolak — hanya admin"
+          },
+          "404": {
+            "description": "Booking tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Hapus booking (Admin Only)",
+        "description": "Menghapus booking berdasarkan ID secara permanen. Hanya dapat dilakukan oleh admin.",
+        "tags": [
+          "Bookings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID booking (MongoDB ObjectId)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Booking berhasil dihapus"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses"
+          },
+          "403": {
+            "description": "Akses ditolak — hanya admin"
+          },
+          "404": {
+            "description": "Booking tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bookings/{id}/cancel": {
+      "put": {
+        "summary": "Membatalkan booking",
+        "description": "Membatalkan booking yang masih berstatus \"pending\" atau \"confirmed\". Hanya pemilik booking yang bisa membatalkan.",
+        "tags": [
+          "Bookings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID booking (MongoDB ObjectId)"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "notes": {
+                    "type": "string",
+                    "description": "Alasan pembatalan (opsional)",
+                    "example": "Saya ingin reschedule"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking berhasil dibatalkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Booking berhasil dibatalkan"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Booking"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Booking tidak dapat dibatalkan (status sudah processing/completed/cancelled)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses"
+          },
+          "403": {
+            "description": "Akses ditolak — bukan pemilik booking"
+          },
+          "404": {
+            "description": "Booking tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/bookings/{id}/review": {
+      "put": {
+        "summary": "Memberikan review dan rating",
+        "description": "Memberikan rating (1-5) dan review tertulis untuk booking yang sudah berstatus \"completed\". Hanya pemilik booking yang bisa review.",
+        "tags": [
+          "Bookings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID booking (MongoDB ObjectId)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Review berhasil dikirim",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Review berhasil dikirim"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Booking"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Booking belum selesai (status bukan completed)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses"
+          },
+          "403": {
+            "description": "Akses ditolak — bukan pemilik booking"
+          },
+          "404": {
+            "description": "Booking tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/financial": {
+      "get": {
+        "summary": "Mendapatkan laporan keuangan (Admin Only)",
+        "description": "Mengembalikan ringkasan laporan keuangan lengkap berdasarkan data booking, termasuk:\n- **Total revenue** (semua booking non-cancelled)\n- **Completed revenue** (booking completed saja)\n- **Revenue per layanan** (breakdown per service)\n- **Revenue per bulan** (breakdown bulanan)\n- **Revenue per status** (breakdown per status booking)\n- **Daftar transaksi** (semua booking sebagai transaksi)\n\nData di-cache selama 60 detik untuk performa.\n",
+        "tags": [
+          "Financial"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data keuangan berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinancialResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Akses ditolak — hanya admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
