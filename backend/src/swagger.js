@@ -334,7 +334,12 @@ const options = {
       }
     }
   },
-  apis: [path.join(__dirname, 'routes', '*.js')], // Path to the API routes
+  apis: [
+    path.join(__dirname, 'routes', 'authRoutes.js'),
+    path.join(__dirname, 'routes', 'serviceRoutes.js'),
+    path.join(__dirname, 'routes', 'bookingRoutes.js'),
+    path.join(__dirname, 'routes', 'financialRoutes.js'),
+  ],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
