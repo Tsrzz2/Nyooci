@@ -342,21 +342,13 @@ const options = {
   ],
 };
 
-// On Vercel serverless, swagger-jsdoc can't read route files from disk
-// (they're bundled, not physical files). So we use a pre-generated JSON spec.
-// For local dev, swagger-jsdoc works normally.
-let swaggerSpec;
-try {
-  // Try loading pre-generated spec first (works on Vercel)
-  const preGenerated = require('./swagger-spec.json');
-  if (preGenerated.paths && Object.keys(preGenerated.paths).length > 0) {
-    swaggerSpec = preGenerated;
-  } else {
-    swaggerSpec = swaggerJsdoc(options);
-  }
-} catch (e) {
-  // Fallback to runtime generation (local dev)
-  swaggerSpec = swaggerJsdoc(options);
-}
+// Pre-generated spec (required for Vercel serverless where files can't be read from disk)
+const preGeneratedSpec = require('./swagger-spec.json');
+
+// Use pre-generated spec if it has paths, otherwise generate at runtime (local dev)
+const swaggerSpec = (preGeneratedSpec.paths && Object.keys(preGeneratedSpec.paths).length > 0)
+  ? preGeneratedSpec
+  : swaggerJsdoc(options);
 
 module.exports = swaggerSpec;
+
